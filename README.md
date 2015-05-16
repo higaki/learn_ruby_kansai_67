@@ -148,12 +148,11 @@ result                          # => 11
 
 #### 解答例: 無理矢理に別解
 ```ruby
-def _inject_(a)
-  case a.size
+def _inject_(ary)
+  case ary.size
   when 0 then nil
-  when 1 then a.first
-  else
-    _inject_(a[2..-1].unshift(a[0] + a[1]))
+  when 1 then ary.first
+  else _inject_([ary[0] + ary[1]] + ary[2..-1])
   end
 end
 
@@ -162,6 +161,10 @@ result = _inject_(a)
 a                               # => [1, 2, 3, 5]
 result                          # => 11
 ```
+
+- Array が空なら `nil` を返す
+- 要素が 1つなら、それを返す
+- 要素が 2つ以上なら、最初の 2つを足し、3つ目以降の要素と処理を繰り返す
 
 ### 演習問題 4
 1. `Enumerable#map` を使って Array の各要素を 2倍してみよう。
