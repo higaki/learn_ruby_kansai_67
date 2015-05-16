@@ -16,6 +16,52 @@ a       # => [1, 2, 3, 5]
 result  # => [2, 4, 6, 10]
 ```
 
+#### 解答例: `map` がないなら `map!` を使えばいいじゃない
+```ruby
+result = a.clone
+result.map!{|i| i * 2}
+
+a                               # => [1, 2, 3, 5]
+result                          # => [2, 4, 6, 10]
+```
+
+`Array#map!` も使用禁止です。
+
+#### 解答例: `map` の別名は `collect`
+```ruby
+result = a.collect{|i| i * 2}
+
+a                               # => [1, 2, 3, 5]
+result                          # => [2, 4, 6, 10]
+```
+
+もちろん `Enumerable#collect` も使用禁止。
+
+#### 解答例: `map` を実装してみた
+```ruby
+module RubyKansai
+  refine Array do
+    def _map_
+      unless block_given?
+        to_enum __callee__
+      else
+        inject([]) do |result, item|
+          result << yield(item)
+        end
+      end
+    end
+  end
+end
+
+using RubyKansai
+result = a._map_{|i| i * 2}
+
+a                               # => [1, 2, 3, 5]
+result                          # => [2, 4, 6, 10]
+```
+
+……そうじゃない
+
 ### 演習問題 2
 `Enumerable#select` を使わずに Array から奇数の要素だけを抽出してみよう。
 
@@ -30,6 +76,52 @@ a       # => [1, 2, 3, 5]
 result  # => [1, 3, 5]
 ```
 
+#### 解答例: `select` がないなら `select!` を (ry
+```ruby
+result = a.clone
+result.select!{|i| i.odd?}
+
+a                               # => [1, 2, 3, 5]
+result                          # => [1, 3, 5]
+```
+
+`Array#select!` も使用禁止!
+
+#### 解答例: `select` の別名は `find_all`
+```ruby
+result = a.find_all{|i| i.odd?}
+
+a                               # => [1, 2, 3, 5]
+result                          # => [1, 3, 5]
+```
+
+`Enumerable#find_all` も使用禁止!!
+
+#### 解答例: `select` を実装してみた(ｷﾘｯ
+```ruby
+module RubyKansai
+  refine Array do
+    def _select_
+      unless block_given?
+        to_enum __callee__
+      else
+        each_with_object([]) do |item, result|
+          result << item if yield(item)
+        end
+      end
+    end
+  end
+end
+
+using RubyKansai
+result = a._select_{|i| i.odd?}
+
+a                               # => [1, 2, 3, 5]
+result                          # => [1, 3, 5]
+```
+
+だから、そうじゃない!
+
 ### 演習問題 3
 `Enumerable#inject` を使わずに Array の要素を合計してみよう。
 
@@ -42,6 +134,33 @@ a.each do |i|
 
 a       # => [1, 2, 3, 5]
 result  # => 11
+```
+
+#### 解答例: `inject` の別名は `reduce`
+```ruby
+result = a.reduce{|m, i| m + i}
+
+a                               # => [1, 2, 3, 5]
+result                          # => 11
+```
+
+`reduce` も (ry
+
+#### 解答例: 無理矢理に別解
+```ruby
+def _inject_(a)
+  case a.size
+  when 0 then nil
+  when 1 then a.first
+  else
+    _inject_(a[2..-1].unshift(a[0] + a[1]))
+  end
+end
+
+result = _inject_(a)
+
+a                               # => [1, 2, 3, 5]
+result                          # => 11
 ```
 
 ### 演習問題 4
