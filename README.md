@@ -46,7 +46,7 @@ result  # => 11
 
 ### 演習問題 4
 1. `Enumerable#map` を使って Array の各要素を 2倍してみよう。
-1. `Enumerable#select` を使って Array から奇数の要素だけろ抽出してみよう。
+1. `Enumerable#select` を使って Array から奇数の要素だけを抽出してみよう。
 1. `Enumerable#inject` を使って Array の要素を合計してみよう。
 
 ```ruby
